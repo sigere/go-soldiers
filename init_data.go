@@ -1,6 +1,6 @@
 package main
 
-import "pbxCodingGojo/army"
+import "go-soldiers/army"
 
 func makeRange(min, max int) []int {
 	a := make([]int, max-min+1)
@@ -10,12 +10,15 @@ func makeRange(min, max int) []int {
 	return a
 }
 
-func initArmy(a *army.Army, size uint) {
+func initArmy(a *army.Army) {
+	
+	var soldiers []army.Soldier
 	for _, x := range makeRange(2, 4) {
-		for _, y := range makeRange(2, 4) {
-			a.Soldiers = append(a.Soldiers, army.Soldier{Compass: army.North, X: x, Y: y})
+		for _, y := range makeRange(7, 9) {
+			soldiers = append(soldiers, army.Soldier{
+				Compass: army.North, X: x, Y: y, Army: a,
+			})
 		}
 	}
-
-	a.MapSize = size
+	a.SetSoldiers(soldiers)
 }

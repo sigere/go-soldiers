@@ -2,50 +2,57 @@ package army
 
 import (
 	"errors"
-	"math/rand"
+	"strconv"
 )
 
-type Executable func(army *Army, args []string) error
+type Executable func(a *Army, args []string) error
 
-func Turn(army *Army, args []string) error {
+func TurnCommand(a *Army, args []string) error {
 	if len(args) < 1 {
 		return errors.New("this command requires one argument")
 	}
 
 	compass, err := CompassFromString(args[0])
+	if err == nil {
+		a.TurnToCompass(compass)
+		return nil
+	}
+
+	direction, err := DirectionFromString(args[0])
+	if err == nil {
+		return a.TurnInDirection(direction)
+	}
+
+	return err
+}
+
+func ScatterCommand(a *Army, args []string) error {
+	a.Scatter()
+	return nil
+}
+
+func GoInDirectionCommand(a *Army, args []string) error {
+	if len(args) < 1 {
+		return errors.New("this command requires at least one argument")
+	}
+
+	direction, err := DirectionFromString(args[0])
 	if err != nil {
 		return err
 	}
 
-	for i := range army.Soldiers {
-		army.Soldiers[i].Compass = compass
-	}
-
-	return nil
-}
-
-func Scatter(army *Army, arg []string) error {
-	for i := range army.Soldiers {
-		army.Soldiers[i].Compass = Compass(rand.Intn(4))
-		army.Soldiers[i].X = rand.Intn(int(army.MapSize))
-		army.Soldiers[i].Y = rand.Intn(int(army.MapSize))
-	}
-
-	return nil
-}
-
-func (a *Army) Forward() error {
-	for i := range a.Soldiers {
-		switch a.Soldiers[i].Compass {
-		case North:
-			a.Soldiers[i].X--
-		case East:
-			a.Soldiers[i].Y++
-		case South:
-			a.Soldiers[i].X++
-		case West:
-			a.Soldiers[i].Y--
+	var steps uint = 1
+	if len(args) >= 2 {
+		converted, err := strconv.Atoi(args[1])
+		if err != nil {
+			return err
 		}
+		if converted < 0 {
+			return errors.New("number of steps must be positive")
+		}
+
+		steps = uint(converted)
 	}
-	return nil
+
+	return a.GoInDirection(direction, steps)
 }

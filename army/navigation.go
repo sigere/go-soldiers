@@ -4,12 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/enescakir/emoji"
+	"go-soldiers/vector"
 	"strings"
 )
 
 type Compass int
 
 type Direction int
+
+type Vector struct {
+	x   int
+	y   int
+	len uint
+}
 
 const (
 	North Compass = iota
@@ -25,8 +32,8 @@ const (
 	Left
 )
 
-func (direction *Compass) String() string {
-	switch *direction {
+func (compass *Compass) String() string {
+	switch *compass {
 	case North:
 		return emoji.UpArrow.String()
 	case South:
@@ -35,6 +42,36 @@ func (direction *Compass) String() string {
 		return emoji.LeftArrow.String()
 	case East:
 		return emoji.RightArrow.String()
+	default:
+		panic(fmt.Sprintf("Invalid direction value: %d", *compass))
+	}
+}
+
+func (compass *Compass) Vector() vector.T {
+	switch *compass {
+	case North:
+		return vector.T{0, 1}
+	case South:
+		return vector.T{0, -1}
+	case West:
+		return vector.T{-1, 0}
+	case East:
+		return vector.T{1, 0}
+	default:
+		panic(fmt.Sprintf("Invalid compass value: %d", *compass))
+	}
+}
+
+func (direction *Direction) Vector() vector.T {
+	switch *direction {
+	case Forward:
+		return vector.T{0, 1}
+	case Backward:
+		return vector.T{0, -1}
+	case Left:
+		return vector.T{-1, 0}
+	case Right:
+		return vector.T{1, 0}
 	default:
 		panic(fmt.Sprintf("Invalid direction value: %d", *direction))
 	}

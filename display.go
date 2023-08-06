@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/enescakir/emoji"
-	"pbxCodingGojo/army"
+	"go-soldiers/army"
+	"go-soldiers/vector"
 )
 
 func display(a *army.Army) error {
@@ -11,17 +12,19 @@ func display(a *army.Army) error {
 	for x, _ := range board {
 		board[x] = make([]string, a.MapSize)
 		for y, _ := range board[x] {
-			board[x][y] = emoji.Herb.String()
+
+			if soldier, ok := a.Map[vector.T{x, y}]; ok == true {
+				board[x][y] = soldier.Compass.String()
+			} else {
+				board[x][y] = emoji.Herb.String()
+			}
 		}
 	}
 
-	for _, soldier := range a.Soldiers {
-		board[soldier.X][soldier.Y] = soldier.Compass.String()
-	}
-
-	for x, _ := range board {
-		for y, _ := range board[x] {
-			_, err := emoji.Printf("%v", board[x][y])
+	size := int(a.MapSize)
+	for y, _ := range board {
+		for x, _ := range board[y] {
+			_, err := emoji.Printf("%v", board[x][size-y-1])
 			if err != nil {
 				return err
 			}

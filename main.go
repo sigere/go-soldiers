@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/pterm/pterm"
-	"pbxCodingGojo/army"
+	"go-soldiers/army"
+	"go-soldiers/vector"
 	"strings"
 )
 
@@ -11,16 +12,16 @@ func main() {
 
 	pterm.DefaultHeader.WithFullWidth().Println("Hello my commander!")
 
-	commandSet := army.Init()
+	commandSet := army.InitCommands()
 	var a = army.Army{
 		Soldiers:   []army.Soldier{},
 		CommandSet: &commandSet,
+		Map:        map[vector.T]*army.Soldier{},
+		MapSize:    10,
 	}
-	initArmy(&a, 10)
-
+	initArmy(&a)
 	var err error
 	for {
-		//pterm.Info.Printfln("provided: %s", input)
 		_ = display(&a)
 		if err != nil {
 			pterm.Error.Printfln("Could not execute: %s", err)
